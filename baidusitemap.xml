@@ -5,7 +5,7 @@
     
   <url>
     <loc>https://rootsli.github.io/2018/06/30/react-component-pattern/</loc>
-    <lastmod>2018-06-30T04:05:54.823Z</lastmod>
+    <lastmod>2018-06-30T04:18:43.328Z</lastmod>
     <data>
         <display>
         <title>展示组件和容器组件分离在React项目中的实践</title>
@@ -30,14 +30,18 @@
 
     
   <url>
-    <loc>https://rootsli.github.io/2017/10/26/iframe-resize-code/</loc>
+    <loc>https://rootsli.github.io/2018/01/04/ie8-compatibility/</loc>
     <lastmod>2018-06-30T03:00:24.863Z</lastmod>
     <data>
         <display>
-        <title>一段iframe自适应代码的分享</title>
-        <pubTime>2017-10-26T14:31:16.000Z</pubTime>
+        <title>前端开发最佳实践之React兼容IE8+的踩坑总结</title>
+        <pubTime>2018-01-04T09:58:04.000Z</pubTime>
         
-        <tag>iframe resize</tag>
+        <tag>CORS</tag>
+         
+        <tag>React 跨域</tag>
+         
+        <tag>兼容IE8</tag>
          
          
            
@@ -124,18 +128,14 @@
 
     
   <url>
-    <loc>https://rootsli.github.io/2018/01/04/ie8-compatibility/</loc>
+    <loc>https://rootsli.github.io/2017/10/26/iframe-resize-code/</loc>
     <lastmod>2018-06-30T03:00:24.863Z</lastmod>
     <data>
         <display>
-        <title>前端开发最佳实践之React兼容IE8+的踩坑总结</title>
-        <pubTime>2018-01-04T09:58:04.000Z</pubTime>
+        <title>一段iframe自适应代码的分享</title>
+        <pubTime>2017-10-26T14:31:16.000Z</pubTime>
         
-        <tag>CORS</tag>
-         
-        <tag>React 跨域</tag>
-         
-        <tag>兼容IE8</tag>
+        <tag>iframe resize</tag>
          
          
            
