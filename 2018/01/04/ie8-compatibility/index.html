@@ -1,0 +1,694 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>前端开发最佳实践之React兼容IE8+的踩坑总结 | rootesli的博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="rootesli">
+    
+
+    
+    <meta name="description" content="内网的一篇文章，感觉总结不错，转之">
+<meta name="keywords" content="CORS,React 跨域,兼容IE8">
+<meta property="og:type" content="article">
+<meta property="og:title" content="前端开发最佳实践之React兼容IE8+的踩坑总结">
+<meta property="og:url" content="https://rootsli.github.io/2018/01/04/ie8-compatibility/index.html">
+<meta property="og:site_name" content="rootesli的博客">
+<meta property="og:description" content="内网的一篇文章，感觉总结不错，转之">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://rootsli.github.io/assets/img/cors.png">
+<meta property="og:image" content="https://rootsli.github.io/assets/img/error.png">
+<meta property="og:image" content="https://rootsli.github.io/assets/img/keycode.png">
+<meta property="og:updated_time" content="2018-06-30T03:00:24.863Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="前端开发最佳实践之React兼容IE8+的踩坑总结">
+<meta name="twitter:description" content="内网的一篇文章，感觉总结不错，转之">
+<meta name="twitter:image" content="https://rootsli.github.io/assets/img/cors.png">
+
+    
+    <link rel="alternative" href="/atom.xml" title="rootesli的博客" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="rootesli的博客" title="rootesli的博客"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="rootesli的博客">rootesli的博客</a></h1>
+				<h2 class="blog-motto">a monkey a man</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:rootsli.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/01/04/ie8-compatibility/" title="前端开发最佳实践之React兼容IE8+的踩坑总结" itemprop="url">前端开发最佳实践之React兼容IE8+的踩坑总结</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="rootesli" target="_blank" itemprop="author">rootesli</a>
+		
+  <p class="article-time">
+    <time datetime="2018-01-04T09:58:04.000Z" itemprop="datePublished"> Published 2018-01-04</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#ie8，ie9首先考虑跨域问题"><span class="toc-number">1.</span> <span class="toc-text">ie8，ie9首先考虑跨域问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解决es3保留字的问题"><span class="toc-number">2.</span> <span class="toc-text">解决es3保留字的问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解决压缩后UglifyJsPlugin的问题"><span class="toc-number">3.</span> <span class="toc-text">解决压缩后UglifyJsPlugin的问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#上面改完后，继续报错"><span class="toc-number">4.</span> <span class="toc-text">上面改完后，继续报错</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解决发生异常未捕获的错误"><span class="toc-number">5.</span> <span class="toc-text">解决发生异常未捕获的错误</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解决es5的API兼容的问题"><span class="toc-number">6.</span> <span class="toc-text">解决es5的API兼容的问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#继续报错，苦逼了"><span class="toc-number">7.</span> <span class="toc-text">继续报错，苦逼了</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解决ie8下的事件不生效的问题："><span class="toc-number">8.</span> <span class="toc-text">解决ie8下的事件不生效的问题：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解决Observable库的问题："><span class="toc-number">9.</span> <span class="toc-text">解决Observable库的问题：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#上面解决完Observable问题的后遗症"><span class="toc-number">10.</span> <span class="toc-text">上面解决完Observable问题的后遗症</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#样式兼容问题："><span class="toc-number">11.</span> <span class="toc-text">样式兼容问题：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解决promise的兼容问题："><span class="toc-number">12.</span> <span class="toc-text">解决promise的兼容问题：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解决fetch的兼容问题："><span class="toc-number">13.</span> <span class="toc-text">解决fetch的兼容问题：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#console的polyfill："><span class="toc-number">14.</span> <span class="toc-text">console的polyfill：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解决ie8下React项目在某些时候a标签无法跳转路由的情况"><span class="toc-number">15.</span> <span class="toc-text">解决ie8下React项目在某些时候a标签无法跳转路由的情况</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#lodash版本："><span class="toc-number"></span> <span class="toc-text">lodash版本：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#es6对象中使用取值器和赋值器报错"><span class="toc-number"></span> <span class="toc-text">es6对象中使用取值器和赋值器报错</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#上面那个问题引发了另外一个问题："><span class="toc-number"></span> <span class="toc-text">上面那个问题引发了另外一个问题：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#babel插件和webpack的兼容ie8的loader可以等价："><span class="toc-number"></span> <span class="toc-text">babel插件和webpack的兼容ie8的loader可以等价：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#本地调试"><span class="toc-number"></span> <span class="toc-text">本地调试</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#要支持ie8，注意的几个点："><span class="toc-number"></span> <span class="toc-text">要支持ie8，注意的几个点：</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料："><span class="toc-number">1.</span> <span class="toc-text">参考资料：</span></a></li></ol>
+		
+		</div>
+		
+		<blockquote>
+<p>最近基于React开发的组件需要兼容IE8+。因此，总结了开发过程中的一些坑。</p>
+</blockquote>
+<h2 id="ie8，ie9首先考虑跨域问题"><a href="#ie8，ie9首先考虑跨域问题" class="headerlink" title="ie8，ie9首先考虑跨域问题"></a>ie8，ie9首先考虑跨域问题</h2><p>主要是采用服务端代理的方法，在项目代码里面放入java代码</p>
+<p>（1）服务端支持在请求的接口加入前缀/v0.1/dispatcher，</p>
+<p>（2）在请求的接口头部加入Dispatcher头</p>
+<p>例如：</p>
+<p>  <img src="/assets/img/cors.png" alt="image"></p>
+<p>  这样就可以通过访问同域的服务端转发接口，实现跨域请求</p>
+<h2 id="解决es3保留字的问题"><a href="#解决es3保留字的问题" class="headerlink" title="解决es3保留字的问题"></a>解决es3保留字的问题</h2><p>保留字如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">default, class等</span><br></pre></td></tr></table></figure>
+<p>报错信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">缺少标识符</span><br></pre></td></tr></table></figure>
+<p>解决方法：</p>
+<p>在webpack1的配置文件中加入配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">postLoaders: [&#123;</span><br><span class="line">            test: /\.js$/,</span><br><span class="line">            loaders: [&apos;es3ify-loader&apos;]</span><br><span class="line">        &#125;]</span><br></pre></td></tr></table></figure>
+<h2 id="解决压缩后UglifyJsPlugin的问题"><a href="#解决压缩后UglifyJsPlugin的问题" class="headerlink" title="解决压缩后UglifyJsPlugin的问题"></a>解决压缩后UglifyJsPlugin的问题</h2><p>报错信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">缺少标识符</span><br></pre></td></tr></table></figure>
+<p>解决方法：</p>
+<p>在配置里面加入screw_ie8,压缩的时候不要去掉ie8的代码</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">new webpack.optimize.UglifyJsPlugin(&#123;</span><br><span class="line">           compress: &#123;</span><br><span class="line">               properties: false,</span><br><span class="line">               warnings: false,</span><br><span class="line">               screw_ie8: false</span><br><span class="line">           &#125;,</span><br><span class="line">           output: &#123;</span><br><span class="line">               beautify: true,</span><br><span class="line">               comments: false,</span><br><span class="line">               quote_keys: true,</span><br><span class="line">               screw_ie8: false</span><br><span class="line">           &#125;,</span><br><span class="line">           mangle: &#123;</span><br><span class="line">               screw_ie8: false</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;)</span><br></pre></td></tr></table></figure>
+<h2 id="上面改完后，继续报错"><a href="#上面改完后，继续报错" class="headerlink" title="上面改完后，继续报错"></a>上面改完后，继续报错</h2><p>报错信息：</p>
+<p>  <img src="/assets/img/error.png" alt="image"></p>
+<p>解决方法：</p>
+<p>原先的webpack版本装的是1.15.2版本的，后面降为1.13.2版本就ok了</p>
+<h2 id="解决发生异常未捕获的错误"><a href="#解决发生异常未捕获的错误" class="headerlink" title="解决发生异常未捕获的错误"></a>解决发生异常未捕获的错误</h2><p>报错信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">从core-js的_object-dp.js发出了错误：发生异常，未捕获</span><br></pre></td></tr></table></figure>
+<p>解决方法：</p>
+<p>原先是使用babel-polyfill用来解决es6的api的兼容es5的问题。</p>
+<p>现在因为core-js抛出错误了，所以直接废弃babel-polyfill</p>
+<p>分别引入 (注： babel-polyfill是包含core-js和regnerator-runtime/runtime的)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">import &apos;core-js-ie8&apos;</span><br><span class="line">import &apos;regenerator-runtime/runtime&apos;</span><br></pre></td></tr></table></figure>
+<p>虽然core-js-ie8能完美解决这个问题，但是意外发现又引发了另外一个问题，core-js-ie8这个包实现的Object.assign在360和ie8+下是有问题的，于是乎就自己发了个npm包</p>
+<p>core-js的issue也有相关的<a href="https://github.com/zloirock/core-js/pull/258" target="_blank" rel="noopener">core-js</a></p>
+<p>最终解决问题的代码变成：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">import &apos;core-js-for-ie8&apos;</span><br><span class="line">import &apos;regenerator-runtime/runtime&apos;</span><br></pre></td></tr></table></figure>
+<h2 id="解决es5的API兼容的问题"><a href="#解决es5的API兼容的问题" class="headerlink" title="解决es5的API兼容的问题"></a>解决es5的API兼容的问题</h2><p>解决方法：</p>
+<p>在index.html的模板文件里面引入shim和sham：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;!--[if lt IE 9]&gt;</span><br><span class="line">  &lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.5.7/es5-shim.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">&lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.5.7/es5-sham.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">  &lt;![endif]--&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="继续报错，苦逼了"><a href="#继续报错，苦逼了" class="headerlink" title="继续报错，苦逼了"></a>继续报错，苦逼了</h2><p>报错信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">无法修改属性type，不允许此命令</span><br></pre></td></tr></table></figure>
+<p>问题原因：</p>
+<p>登录页面上有个“是否显示密码”；可以切换修改, 代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; isShowPassword ? &lt;input type=&quot;text&quot; /&gt; : &lt;input type=&quot;password&quot; /&gt; &#125;</span><br></pre></td></tr></table></figure>
+<p>因为对React来说，有虚拟Dom，对比下dom结构都没有改变，只是type改变，不会重新渲染新的input元素，只会做个diff，把type替换掉，于是报这个错了。</p>
+<p>解决方法：</p>
+<p>React组件只要带了key属性，都会重新render的，不会做diff比较。</p>
+<p>于是最终更正后的代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; isShowPassword ? &lt;input type=&quot;text&quot; key=&quot;text&quot; /&gt; : &lt;input type=&quot;password&quot; key=&quot;password&quot; /&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="解决ie8下的事件不生效的问题："><a href="#解决ie8下的事件不生效的问题：" class="headerlink" title="解决ie8下的事件不生效的问题："></a>解决ie8下的事件不生效的问题：</h2><p>问题：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&lt;input type=&quot;text&quot; onChange=&#123;this.onChange&#125; onClick=&#123;this.onClick&#125; onInput=&#123;this.onInput&#125; onPropertyChange=&#123;this.onPropertyChange&#125; /&gt;</span><br><span class="line"></span><br><span class="line">&lt;input type=&quot;checkbox&quot; onChange=&#123;this.onChange&#125; /&gt;</span><br><span class="line"></span><br><span class="line">以上代码:</span><br><span class="line">（1）&lt;input type=&quot;checkbox&quot;/&gt;元素上的onChange事件是生效的</span><br><span class="line"></span><br><span class="line">（2）&lt;input type=&quot;text&quot;/&gt;元素上只有OnClick事件是生效的，其他都不生效</span><br></pre></td></tr></table></figure>
+<p>解决方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">（1）保留onInut事件，其他事件不需要</span><br><span class="line">&lt;input type=&quot;text&quot; onInput=&#123;this.onInput&#125; /&gt;</span><br><span class="line">（2）index.html的模板里面添加</span><br><span class="line">&lt;!--[if IE 8]&gt;&lt;script src=&quot;//cdnjs.cloudflare.com/ajax/libs/ie8/0.3.2/ie8.js&quot;&gt;&lt;/script&gt;&lt;![endif]--&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="解决Observable库的问题："><a href="#解决Observable库的问题：" class="headerlink" title="解决Observable库的问题："></a>解决Observable库的问题：</h2><p>问题：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">import &#123; Observable &#125; from &apos;rx-lite&apos;</span><br><span class="line"></span><br><span class="line">这个库是支持ie10+的，并不支持ie8，9</span><br></pre></td></tr></table></figure>
+<p>解决方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">很开心的是，有个兼容库rx-lite-compat是支持ie8+的，心里默默开心，于是代码变成如下：</span><br><span class="line"></span><br><span class="line">import &#123; Observable &#125; from &apos;rx-lite-compat&apos;</span><br></pre></td></tr></table></figure>
+<h2 id="上面解决完Observable问题的后遗症"><a href="#上面解决完Observable问题的后遗症" class="headerlink" title="上面解决完Observable问题的后遗症"></a>上面解决完Observable问题的后遗症</h2><p>问题根源：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">开心的太早了，引入rx-lite-compat又报另外一个问题了，这库里面的事件报错了，估计不兼容了</span><br></pre></td></tr></table></figure>
+<p>报错信息：</p>
+<p><img src="/assets/img/keycode.png" alt="image"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">无法获取未定义或null 引用的属性“keyCode”</span><br></pre></td></tr></table></figure>
+<p>解决方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">引入ie8.js文件后，一切正常，好开心了。</span><br><span class="line"></span><br><span class="line">&lt;!--[if IE 8]&gt;&lt;script src=&quot;//cdnjs.cloudflare.com/ajax/libs/ie8/0.3.2/ie8.js&quot;&gt;&lt;/script&gt;&lt;![endif]--&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="样式兼容问题："><a href="#样式兼容问题：" class="headerlink" title="样式兼容问题："></a>样式兼容问题：</h2><p>（1） transform:translate(-50%)这个是不支持的</p>
+<p>（2） 透明度也是不支持的,改造后的代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">if (browserLessIE8()) &#123;</span><br><span class="line">           document.getElementById(&apos;shadow&apos;).style.backgroundColor = &apos;#000&apos;</span><br><span class="line">           document.getElementById(&apos;shadow&apos;).style.filter = &apos;progid:DXImageTransform.Microsoft.Alpha(Opacity = 80)&apos;</span><br><span class="line">       &#125; else &#123;</span><br><span class="line">           document.getElementById(&apos;shadow&apos;).style.background = &apos;rgba(0,0,0,0.8)&apos;</span><br><span class="line">       &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="解决promise的兼容问题："><a href="#解决promise的兼容问题：" class="headerlink" title="解决promise的兼容问题："></a>解决promise的兼容问题：</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">可以引入es6-promise库支持ie8，使用如下：</span><br><span class="line"></span><br><span class="line">require(&apos;es6-promise&apos;).polyfill()</span><br></pre></td></tr></table></figure>
+<h2 id="解决fetch的兼容问题："><a href="#解决fetch的兼容问题：" class="headerlink" title="解决fetch的兼容问题："></a>解决fetch的兼容问题：</h2><p>问题根源：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"> （1）发现请求成功了，也引入了es6-promise了，但是还是无法进入then方法，原来是fetch不支持ie8</span><br><span class="line"></span><br><span class="line">（2）isomorphic-fetch是不支持ie8的</span><br></pre></td></tr></table></figure>
+<p>解决方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">替换成universal-fetch支持ie8的</span><br></pre></td></tr></table></figure>
+<h2 id="console的polyfill："><a href="#console的polyfill：" class="headerlink" title="console的polyfill："></a>console的polyfill：</h2><p>问题原因：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ie8没有打开控制台的时候，是没有console这个对象了，所以需要对console进行polyfil</span><br></pre></td></tr></table></figure>
+<p>解决方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">import &apos;console-polyfill&apos;</span><br></pre></td></tr></table></figure>
+<h2 id="解决ie8下React项目在某些时候a标签无法跳转路由的情况"><a href="#解决ie8下React项目在某些时候a标签无法跳转路由的情况" class="headerlink" title="解决ie8下React项目在某些时候a标签无法跳转路由的情况"></a>解决ie8下React项目在某些时候a标签无法跳转路由的情况</h2><p>问题原因：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;a href=&quot;#/home&quot;&gt;&lt;button&gt;我来试一试&lt;/button&gt;&lt;/a&gt;</span><br><span class="line"></span><br><span class="line">（1）以上代码在ie8下跳转失效</span><br><span class="line"></span><br><span class="line">（2）因为a标签里面包了button标签，从而导致跳转失败了</span><br></pre></td></tr></table></figure>
+<p>解决方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&lt;a href=&quot;#/home&quot;&gt;&lt;div&gt;我来试一试&lt;/div&gt;&lt;/a&gt;</span><br><span class="line"></span><br><span class="line">（1）把button标签改成div就可以了</span><br><span class="line">（2）所以注意不要a标签里面包含button标签哦</span><br></pre></td></tr></table></figure>
+<h1 id="lodash版本："><a href="#lodash版本：" class="headerlink" title="lodash版本："></a>lodash版本：</h1><p>lodash 从4.0.0开始支持的环境有： Chrome 46-47, Firefox 42-43, IE 9-11, Edge 13, Safari 8-9, Node.js 0.10.x, 0.12.x, 4.x, &amp; 5.x, &amp; PhantomJS 1.9.8。已不再支持IE6~IE8。</p>
+<p>如果想兼容IE6~IE8，可以使用3.x版本。3.x版本支持的环境有：<br>Chrome 43-44, Firefox 38-39, IE 6-11, MS Edge, Safari 5-8, ChakraNode 0.12.2, io.js 2.5.0, Node.js 0.8.28, 0.10.40, &amp; 0.12.7, PhantomJS 1.9.8, RingoJS 0.11, &amp; Rhino1.7.6</p>
+<p>lodash 3.x 版本没有直接提供可用的js， 需要手动构建。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">安装</span><br><span class="line">npm i -g lodash-cli@3.10.1</span><br><span class="line">安装完成后执行</span><br><span class="line">lodash compat</span><br><span class="line">会输出兼容IE6~IE8的版本lodash.custom.js及lodash.custom.min.js</span><br></pre></td></tr></table></figure>
+<p>lodash 3.10.1版本文档地址： <a href="https://lodash.com/docs/3.10.1#template" target="_blank" rel="noopener">https://lodash.com/docs/3.10.1#template</a></p>
+<h1 id="es6对象中使用取值器和赋值器报错"><a href="#es6对象中使用取值器和赋值器报错" class="headerlink" title="es6对象中使用取值器和赋值器报错"></a>es6对象中使用取值器和赋值器报错</h1><p>报错信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">SCRIPT1003: 缺少 &apos;:&apos;</span><br><span class="line"></span><br><span class="line">问题定位到：</span><br><span class="line"></span><br><span class="line">var Auth = &#123;</span><br><span class="line"></span><br><span class="line">	  __access_token: null,</span><br><span class="line"></span><br><span class="line">	  get accessToken() &#123;</span><br><span class="line">	    return this.__access_token;</span><br><span class="line">	  &#125;,</span><br><span class="line"></span><br><span class="line">	  set accessToken(val) &#123;</span><br><span class="line">	    this.__access_token = val;</span><br><span class="line">	  &#125;,</span><br><span class="line"></span><br><span class="line">	  __mac_key: null,</span><br><span class="line"></span><br><span class="line">	  get macKey() &#123;</span><br><span class="line">	    return this.__mac_key;</span><br><span class="line">	  &#125;,</span><br><span class="line"></span><br><span class="line">	  set macKey(val) &#123;</span><br><span class="line">	    this.__mac_key = val;</span><br><span class="line">	  &#125;</span><br><span class="line">&#125;</span><br><span class="line">get set后面是空格，缺少&apos;:&apos;</span><br></pre></td></tr></table></figure>
+<p>问题原因：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">babel转化的时候没有加入插件babel-plugin-transform-es5-property-mutators</span><br></pre></td></tr></table></figure>
+<p>解决方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.babelrc里面引入这个插件：</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  &quot;plugins&quot;: [&quot;transform-es5-property-mutators&quot;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="上面那个问题引发了另外一个问题："><a href="#上面那个问题引发了另外一个问题：" class="headerlink" title="上面那个问题引发了另外一个问题："></a>上面那个问题引发了另外一个问题：</h1><p>上面的es6的get和set的代码，babel编译后的代码也会有get和set属性，编译后如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    key: &apos;accessToken&apos;,</span><br><span class="line">    get: function get() &#123;</span><br><span class="line">      return this.__access_token;</span><br><span class="line">    &#125;,</span><br><span class="line">    set: function set(val) &#123;</span><br><span class="line">      this.__access_token = val;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">export &#123; default as request &#125; from &apos;./request&apos;</span><br><span class="line">export &#123; default as RBAC &#125; from &apos;./rbac&apos;</span><br><span class="line">export &#123; default as RBACAdapt &#125; from &apos;./rbac/instance&apos;</span><br></pre></td></tr></table></figure>
+<p>上面这个代码也是类似的，bable编译后的代码也会有get和set属性如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Object.defineProperty(exports, &apos;RBACAdapt&apos;, &#123;</span><br><span class="line">  enumerable: true,</span><br><span class="line">  get: function get() &#123;</span><br><span class="line">    return _interopRequireDefault(_instance)[&apos;default&apos;];</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>问题原因：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1. ie8不支持设置访问器属性，即便是引了es5-shim;</span><br><span class="line">2. Babel 会把export xxx from ‘xx’ 语法转码为访问器属性设置的exports对象。</span><br></pre></td></tr></table></figure>
+<p>解决方法：</p>
+<ol>
+<li>代码里面不要使用get，set</li>
+<li>export { default as request } from ‘./request’类似这样的写法要分两句写：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">import request from &apos;./request&apos;</span><br><span class="line"></span><br><span class="line">export request</span><br></pre></td></tr></table></figure>
+<h1 id="babel插件和webpack的兼容ie8的loader可以等价："><a href="#babel插件和webpack的兼容ie8的loader可以等价：" class="headerlink" title="babel插件和webpack的兼容ie8的loader可以等价："></a>babel插件和webpack的兼容ie8的loader可以等价：</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">es3ify-loader相当于babelrc里面的两个插件</span><br><span class="line">transform-es3-property-literals</span><br><span class="line">transform-es3-member-expression-literal</span><br><span class="line"></span><br><span class="line">webpack里面要是有用es3ify-loader,在.babelrc里面就不用配置</span><br><span class="line">transform-es3-property-literals</span><br><span class="line">transform-es3-member-expression-literal</span><br><span class="line">这两个插件了</span><br><span class="line"></span><br><span class="line">反之亦然</span><br></pre></td></tr></table></figure>
+<h1 id="本地调试"><a href="#本地调试" class="headerlink" title="本地调试"></a>本地调试</h1><p>我们开发的组件，都是通过iframe的方式被业务系统所引用。由于在IE下，iframe模拟接入，存在同源限制（即iframe的src地址不能和浏览器里的url地址相同）。<br>因此，在IE下调试，需要解决同源问题。我们使用的方式是，通过修改etc\hosts文件，将同一本地IP地址映射到不同的域名下，保证本地地址在IE下可调试。</p>
+<h1 id="要支持ie8，注意的几个点："><a href="#要支持ie8，注意的几个点：" class="headerlink" title="要支持ie8，注意的几个点："></a>要支持ie8，注意的几个点：</h1><p>1.webpack要用1.x，2.x不支持ie8了</p>
+<p>2.源码中不要使用es6的get和set访问器</p>
+<p>3.不要写成export x from ‘x’，要分两步走</p>
+<p>4.react要用0.14.x版本</p>
+<h2 id="参考资料："><a href="#参考资料：" class="headerlink" title="参考资料："></a>参考资料：</h2><p><a href="https://github.com/zuojj/fedlab/issues/5" target="_blank" rel="noopener">Webpack-IE低版本兼容指南</a></p>
+<p><a href="http://blog.suzper.com/2017/04/17/IE8%E4%B8%8B%E4%BD%BF%E7%94%A8react%E6%80%BB%E7%BB%93/" target="_blank" rel="noopener">IE8下使用React开发总结</a></p>
+<p><a href="https://github.com/reactjs/react-redux/issues/133" target="_blank" rel="noopener">defineProperty</a></p>
+<p><a href="https://github.com/facebook/react/issues/3131" target="_blank" rel="noopener">ie8.js</a></p>
+<p><a href="https://github.com/xcatliu/react-ie8/issues/2" target="_blank" rel="noopener">Exception thrown and not caught</a></p>
+<p><a href="http://react-ie8.xcatliu.com/" target="_blank" rel="noopener">Make your React app work in IE8</a></p>
+<p><a href="https://www.maizhiying.me/posts/2017/03/01/webpack-babel-ie8-support.html" target="_blank" rel="noopener">让Webpack+Babel支持IE8</a></p>
+<p><a href="http://www.aliued.com/?p=3240" target="_blank" rel="noopener">alibaba的兼容ie8的项目</a></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/前端开发最佳实践/">前端开发最佳实践</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/CORS/">CORS</a><a href="/tags/React-跨域/">React 跨域</a><a href="/tags/兼容IE8/">兼容IE8</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://rootsli.github.io/2018/01/04/ie8-compatibility/" data-title="前端开发最佳实践之React兼容IE8+的踩坑总结 | rootesli的博客" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/06/30/react-component-pattern/" title="展示组件和容器组件分离在React项目中的实践">
+  <strong>上一篇：</strong><br/>
+  <span>
+  展示组件和容器组件分离在React项目中的实践</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/10/26/iframe-resize-code/"  title="一段iframe自适应代码的分享">
+ <strong>下一篇：</strong><br/> 
+ <span>一段iframe自适应代码的分享
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#ie8，ie9首先考虑跨域问题"><span class="toc-number">1.</span> <span class="toc-text">ie8，ie9首先考虑跨域问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解决es3保留字的问题"><span class="toc-number">2.</span> <span class="toc-text">解决es3保留字的问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解决压缩后UglifyJsPlugin的问题"><span class="toc-number">3.</span> <span class="toc-text">解决压缩后UglifyJsPlugin的问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#上面改完后，继续报错"><span class="toc-number">4.</span> <span class="toc-text">上面改完后，继续报错</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解决发生异常未捕获的错误"><span class="toc-number">5.</span> <span class="toc-text">解决发生异常未捕获的错误</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解决es5的API兼容的问题"><span class="toc-number">6.</span> <span class="toc-text">解决es5的API兼容的问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#继续报错，苦逼了"><span class="toc-number">7.</span> <span class="toc-text">继续报错，苦逼了</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解决ie8下的事件不生效的问题："><span class="toc-number">8.</span> <span class="toc-text">解决ie8下的事件不生效的问题：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解决Observable库的问题："><span class="toc-number">9.</span> <span class="toc-text">解决Observable库的问题：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#上面解决完Observable问题的后遗症"><span class="toc-number">10.</span> <span class="toc-text">上面解决完Observable问题的后遗症</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#样式兼容问题："><span class="toc-number">11.</span> <span class="toc-text">样式兼容问题：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解决promise的兼容问题："><span class="toc-number">12.</span> <span class="toc-text">解决promise的兼容问题：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解决fetch的兼容问题："><span class="toc-number">13.</span> <span class="toc-text">解决fetch的兼容问题：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#console的polyfill："><span class="toc-number">14.</span> <span class="toc-text">console的polyfill：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解决ie8下React项目在某些时候a标签无法跳转路由的情况"><span class="toc-number">15.</span> <span class="toc-text">解决ie8下React项目在某些时候a标签无法跳转路由的情况</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#lodash版本："><span class="toc-number"></span> <span class="toc-text">lodash版本：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#es6对象中使用取值器和赋值器报错"><span class="toc-number"></span> <span class="toc-text">es6对象中使用取值器和赋值器报错</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#上面那个问题引发了另外一个问题："><span class="toc-number"></span> <span class="toc-text">上面那个问题引发了另外一个问题：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#babel插件和webpack的兼容ie8的loader可以等价："><span class="toc-number"></span> <span class="toc-text">babel插件和webpack的兼容ie8的loader可以等价：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#本地调试"><span class="toc-number"></span> <span class="toc-text">本地调试</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#要支持ie8，注意的几个点："><span class="toc-number"></span> <span class="toc-text">要支持ie8，注意的几个点：</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料："><span class="toc-number">1.</span> <span class="toc-text">参考资料：</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/vue2全家桶/" title="vue2全家桶">vue2全家桶<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/一些坑/" title="一些坑">一些坑<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/前端开发最佳实践/" title="前端开发最佳实践">前端开发最佳实践<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/基础理论，原理/" title="基础理论，原理">基础理论，原理<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/方法函数，技巧/" title="方法函数，技巧">方法函数，技巧<sup>1</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/CSS3/" title="CSS3">CSS3<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/CORS/" title="CORS">CORS<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/CSS计算属性/" title="CSS计算属性">CSS计算属性<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/自适应布局/" title="自适应布局">自适应布局<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/HTTP-OPTIONS/" title="HTTP OPTIONS">HTTP OPTIONS<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/preflight-request/" title="preflight request">preflight request<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/vue-hot-reload/" title="vue hot reload">vue hot reload<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/pointer-events/" title="pointer-events">pointer-events<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/hasOwnProperty用法/" title="hasOwnProperty用法">hasOwnProperty用法<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/JSON字段连字符式转为驼峰式/" title="JSON字段连字符式转为驼峰式">JSON字段连字符式转为驼峰式<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/连字符转为驼峰式/" title="连字符转为驼峰式">连字符转为驼峰式<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/apply-call-bind的作用/" title="apply,call,bind的作用">apply,call,bind的作用<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/proto/" title="_proto_">_proto_<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/原型链/" title="原型链">原型链<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/iframe-resize/" title="iframe resize">iframe resize<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/calc-函数/" title="calc()函数">calc()函数<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/兼容IE8/" title="兼容IE8">兼容IE8<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/展示组件/" title="展示组件">展示组件<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/容器组件/" title="容器组件">容器组件<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/react/" title="react">react<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://coderq.com" target="_blank" title="一个面向程序员交流分享的新一代社区">码农圈</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://wuchong.me" target="_blank" title="Jark&#39;s Blog">Jark&#39;s Blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS</a>
+</div>
+
+  <div class="weiboshow">
+  <p class="asidetitle">Weibo</p>
+    <iframe width="100%" height="119" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=null&verifier=b3593ceb&dpc=1"></iframe>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Larry Page in Google. <br/>
+			This is my blog,believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/2176287895" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="rootesli">rootesli</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

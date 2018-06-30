@@ -1,0 +1,626 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>前端开发最佳实践之HTML5 Server-Sent Events串流的使用 | rootesli的博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="rootesli">
+    
+
+    
+    <meta name="description" content="文章介绍了HTML5 Server-Sent Events功能的使用以及利用此功能实现服务器消息的主动推送。">
+<meta name="keywords" content="HTML5 串流,SSE,Server-Sent Events,WebSocket">
+<meta property="og:type" content="article">
+<meta property="og:title" content="前端开发最佳实践之HTML5 Server-Sent Events串流的使用">
+<meta property="og:url" content="https://rootsli.github.io/2017/01/17/server-sent-events/index.html">
+<meta property="og:site_name" content="rootesli的博客">
+<meta property="og:description" content="文章介绍了HTML5 Server-Sent Events功能的使用以及利用此功能实现服务器消息的主动推送。">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-06-30T03:00:24.863Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="前端开发最佳实践之HTML5 Server-Sent Events串流的使用">
+<meta name="twitter:description" content="文章介绍了HTML5 Server-Sent Events功能的使用以及利用此功能实现服务器消息的主动推送。">
+
+    
+    <link rel="alternative" href="/atom.xml" title="rootesli的博客" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="rootesli的博客" title="rootesli的博客"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="rootesli的博客">rootesli的博客</a></h1>
+				<h2 class="blog-motto">a monkey a man</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:rootsli.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/01/17/server-sent-events/" title="前端开发最佳实践之HTML5 Server-Sent Events串流的使用" itemprop="url">前端开发最佳实践之HTML5 Server-Sent Events串流的使用</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="rootesli" target="_blank" itemprop="author">rootesli</a>
+		
+  <p class="article-time">
+    <time datetime="2017-01-17T12:31:16.000Z" itemprop="datePublished"> Published 2017-01-17</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#简介"><span class="toc-number">1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SSE-VS-WebSocket"><span class="toc-number">2.</span> <span class="toc-text">SSE VS WebSocket</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SSE-浏览器兼容性"><span class="toc-number">3.</span> <span class="toc-text">SSE 浏览器兼容性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SSE-浏览器端实现"><span class="toc-number">4.</span> <span class="toc-text">SSE 浏览器端实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SSE-服务器端实现"><span class="toc-number">5.</span> <span class="toc-text">SSE 服务器端实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数据格式"><span class="toc-number">6.</span> <span class="toc-text">数据格式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安全性"><span class="toc-number">7.</span> <span class="toc-text">安全性</span></a></li></ol>
+		
+		</div>
+		
+		<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>在传统的B/S架构中，当浏览器关心的某个数据发生变更时，服务器无法主动向浏览器端推送变更信息，只能由浏览器端通过AJAX定时轮询方式进行数据的查询和更新，这种方式下，数据的更新存在延迟，实时性不好。后来，出现的WebSocket彻底解决了该问题，但是使用起来较为复杂，而且需要服务器端的支持。<br>不过除了WebSocket，在HTML5标准中，还有一个Server-Sent Events（下文简称SSE）也可以实现服务器向浏览器主动推送消息。SSE的基本概念跟WebSocket有点类似，浏览器可以利用SSE来“订阅”服务器上的一个数据源，当这个数据源的数据有更新的时候，就会通过这条“订阅”的线路，<br>将数据主动推送给浏览器，从而实现数据的实时更新。</p>
+<h2 id="SSE-VS-WebSocket"><a href="#SSE-VS-WebSocket" class="headerlink" title="SSE VS WebSocket"></a>SSE VS WebSocket</h2><ul>
+<li><p><strong>SSE</strong></p>
+<ul>
+<li>单向通信，只能服务器端往浏览器端推送数据，因此，比较适合股市行情，即时新闻等数据单向传输（服务端推浏览器端），数据量少的应用</li>
+<li>架构于传统的HTTP协议之上，向前兼容</li>
+<li>实现简单，服务器端只需添加几行应用级代码即可实现</li>
+<li>存在一些WebSocket没有的优点，例如：断线重连，事件ID与传送任意事件等</li>
+<li>IE浏览器不支持（可以通过引入开源库解决）</li>
+</ul>
+</li>
+<li><p><strong>WebSocket</strong></p>
+<ul>
+<li>全双工双向通信，功能强大</li>
+<li>无法向前兼容，需服务器端特别支持</li>
+<li>适合线上游戏，聊天程序及各种需要及时双向传输数据的应用</li>
+<li>无论是服务器端还是浏览器端实现都相对复杂</li>
+</ul>
+</li>
+</ul>
+<h2 id="SSE-浏览器兼容性"><a href="#SSE-浏览器兼容性" class="headerlink" title="SSE 浏览器兼容性"></a>SSE 浏览器兼容性</h2><p>所有主流浏览器均支持SSE，除了IE。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">提示：对于不支持Server-Sent Events功能的浏览器，建议使用开源库解决，例如：https://github.com/EventSource/eventsource</span><br></pre></td></tr></table></figure>
+<h2 id="SSE-浏览器端实现"><a href="#SSE-浏览器端实现" class="headerlink" title="SSE 浏览器端实现"></a>SSE 浏览器端实现</h2><ul>
+<li><strong>step1.浏览器支持检测</strong><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">if (!!window.EventSource) &#123;</span><br><span class="line">  var source = new EventSource(&apos;stream.php&apos;);</span><br><span class="line">&#125; else &#123;</span><br><span class="line">  // 瀏覽器不支援 SSE</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>注意：当指定完整URL时，该URL必须与网页地址一致，不支持跨域，即不能为第三方服务地址。</p>
+<ul>
+<li><strong>step2.设置事件监听回调</strong><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">//数据接收回调</span><br><span class="line">source.addEventListener(&apos;message&apos;, function(e) &#123;</span><br><span class="line">  console.log(e.data); //当服务端数据推送过来时，可以通过e.data获取数据</span><br><span class="line">&#125;, false);</span><br><span class="line"></span><br><span class="line">source.addEventListener(&apos;open&apos;, function(e) &#123;</span><br><span class="line">  // 通信链路已建立</span><br><span class="line">&#125;, false);</span><br><span class="line"></span><br><span class="line">source.addEventListener(&apos;error&apos;, function(e) &#123;</span><br><span class="line">  if (e.readyState == EventSource.CLOSED) &#123;</span><br><span class="line">    // 通信链路已关闭</span><br><span class="line">  &#125;</span><br><span class="line">&#125;, false);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>SSE很好的一点是如果链路因为某些原因中断了，它会自动在大约3秒钟后重新连接，开发者也可以自己设置这个等待事件。</p>
+<h2 id="SSE-服务器端实现"><a href="#SSE-服务器端实现" class="headerlink" title="SSE 服务器端实现"></a>SSE 服务器端实现</h2><p>以下为Node.js的实现版本：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">var http = require(&apos;http&apos;);</span><br><span class="line">var sys = require(&apos;sys&apos;);</span><br><span class="line">var fs = require(&apos;fs&apos;);</span><br><span class="line"></span><br><span class="line">http.createServer(function(req, res) &#123;</span><br><span class="line">  //debugHeaders(req);</span><br><span class="line"></span><br><span class="line">  if (req.headers.accept &amp;&amp; req.headers.accept == &apos;text/event-stream&apos;) &#123;</span><br><span class="line">    if (req.url == &apos;/events&apos;) &#123;</span><br><span class="line">      sendSSE(req, res);</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      res.writeHead(404);</span><br><span class="line">      res.end();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; else &#123;</span><br><span class="line">    res.writeHead(200, &#123;&apos;Content-Type&apos;: &apos;text/html&apos;&#125;);</span><br><span class="line">    res.write(fs.readFileSync(__dirname + &apos;/sse-node.html&apos;));</span><br><span class="line">    res.end();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;).listen(8000);</span><br><span class="line"></span><br><span class="line">function sendSSE(req, res) &#123;</span><br><span class="line">  res.writeHead(200, &#123;</span><br><span class="line">    &apos;Content-Type&apos;: &apos;text/event-stream&apos;,</span><br><span class="line">    &apos;Cache-Control&apos;: &apos;no-cache&apos;,</span><br><span class="line">    &apos;Connection&apos;: &apos;keep-alive&apos;</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  var id = (new Date()).toLocaleTimeString();</span><br><span class="line"></span><br><span class="line">  // Sends a SSE every 5 seconds on a single connection.</span><br><span class="line">  setInterval(function() &#123;</span><br><span class="line">    constructSSE(res, id, (new Date()).toLocaleTimeString());</span><br><span class="line">  &#125;, 5000);</span><br><span class="line"></span><br><span class="line">  constructSSE(res, id, (new Date()).toLocaleTimeString());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function constructSSE(res, id, data) &#123;</span><br><span class="line">  res.write(&apos;id: &apos; + id + &apos;\n&apos;);</span><br><span class="line">  res.write(&quot;data: &quot; + data + &apos;\n\n&apos;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function debugHeaders(req) &#123;</span><br><span class="line">  sys.puts(&apos;URL: &apos; + req.url);</span><br><span class="line">  for (var key in req.headers) &#123;</span><br><span class="line">    sys.puts(key + &apos;: &apos; + req.headers[key]);</span><br><span class="line">  &#125;</span><br><span class="line">  sys.puts(&apos;\n\n&apos;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="数据格式"><a href="#数据格式" class="headerlink" title="数据格式"></a>数据格式</h2><p>使用SSE传输数据，需要符合它约定的格式。<br>基本格式：以 data: 开头，加上数据内容，最后以2个换行符 \n\n 结束，例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data: My message\n\n</span><br></pre></td></tr></table></figure>
+<p>如果要传输的数据量比较大的话，也可以将数据进行分行传输，每行都以data:开头，然后以一个换行符\n结尾（最后一行需要2个换行符），例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data: first line\n</span><br><span class="line">data: second line\n\n</span><br></pre></td></tr></table></figure>
+<p>像上面这样连续的data行会被认为是一个数据，这些数据被传送到浏览器端时，只会触发一次数据接收回调。并且数据会被自动合并。上面这个例子，浏览器收到的数据为:<br>e.data = “first line\nsecond line”</p>
+<ul>
+<li>传送JSON<br>如果要传送 JSON 格式的资料，可以这样写：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">data: &#123;\n</span><br><span class="line">data: &quot;msg&quot;: &quot;hello&quot;,\n</span><br><span class="line">data: &quot;id&quot;: 123\n</span><br><span class="line">data: &#125;\n\n</span><br></pre></td></tr></table></figure>
+<p>浏览器端收到这个 JSON 数据后，可以这样处理：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">source.addEventListener(&apos;message&apos;, function(e) &#123;</span><br><span class="line">  var data = JSON.parse(e.data);</span><br><span class="line">  console.log(data.id, data.msg);</span><br><span class="line">&#125;, false);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>事件分类</li>
+</ul>
+<p>发送的数据可以根据事件名称，对数据进行分类。事件名称通过event来指定，浏览器在接收到含有event的数据后，就可以根据不同的事件名称来进行处理。</p>
+<p>下面发送的数据中，包含三个不同的事件，分别为：普通消息事件（message），用户登录事件（userlogon）和更新事件（update）。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">data: &#123;&quot;msg&quot;: &quot;First message&quot;&#125;\n\n</span><br><span class="line">event: userlogon\n</span><br><span class="line">data: &#123;&quot;username&quot;: &quot;John123&quot;&#125;\n\n</span><br><span class="line">event: update\n</span><br><span class="line">data: &#123;&quot;username&quot;: &quot;John123&quot;, &quot;emotion&quot;: &quot;happy&quot;&#125;\n\n</span><br></pre></td></tr></table></figure>
+<p>浏览器端针对上面事件的处理代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">source.addEventListener(&apos;message&apos;, function(e) &#123;</span><br><span class="line">  var data = JSON.parse(e.data);</span><br><span class="line">  console.log(data.msg);</span><br><span class="line">&#125;, false);</span><br><span class="line"></span><br><span class="line">source.addEventListener(&apos;userlogon&apos;, function(e) &#123;</span><br><span class="line">  var data = JSON.parse(e.data);</span><br><span class="line">  console.log(&apos;User login:&apos; + data.username);</span><br><span class="line">&#125;, false);</span><br><span class="line"></span><br><span class="line">source.addEventListener(&apos;update&apos;, function(e) &#123;</span><br><span class="line">  var data = JSON.parse(e.data);</span><br><span class="line">  console.log(data.username + &apos; is now &apos; + data.emotion);</span><br><span class="line">&#125;, false);</span><br></pre></td></tr></table></figure>
+<h2 id="安全性"><a href="#安全性" class="headerlink" title="安全性"></a>安全性</h2><p>为了避免恶意攻击，在使用SSE接收数据时，需要检查数据中的e.origin是否为合法来源。如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">source.addEventListener(&apos;message&apos;, function(e) &#123;</span><br><span class="line">  if (e.origin != &apos;http://www.data.com&apos;) &#123;</span><br><span class="line">    alert(&apos;Origin was not http://www.data.com&apos;);</span><br><span class="line">    return;</span><br><span class="line">  &#125;</span><br><span class="line">  // ...</span><br><span class="line">&#125;, false);</span><br></pre></td></tr></table></figure>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/前端开发最佳实践/">前端开发最佳实践</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/HTML5-串流/">HTML5 串流</a><a href="/tags/SSE/">SSE</a><a href="/tags/Server-Sent-Events/">Server-Sent Events</a><a href="/tags/WebSocket/">WebSocket</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://rootsli.github.io/2017/01/17/server-sent-events/" data-title="前端开发最佳实践之HTML5 Server-Sent Events串流的使用 | rootesli的博客" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2017/01/24/vue2-hot-reload-webstorm/" title="关于使用vue-loader时，热部署无法使用问题">
+  <strong>上一篇：</strong><br/>
+  <span>
+  关于使用vue-loader时，热部署无法使用问题</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/01/09/about-pointer-events/"  title="前端开发最佳实践之CSS3 pointer-events:none">
+ <strong>下一篇：</strong><br/> 
+ <span>前端开发最佳实践之CSS3 pointer-events:none
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#简介"><span class="toc-number">1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SSE-VS-WebSocket"><span class="toc-number">2.</span> <span class="toc-text">SSE VS WebSocket</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SSE-浏览器兼容性"><span class="toc-number">3.</span> <span class="toc-text">SSE 浏览器兼容性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SSE-浏览器端实现"><span class="toc-number">4.</span> <span class="toc-text">SSE 浏览器端实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SSE-服务器端实现"><span class="toc-number">5.</span> <span class="toc-text">SSE 服务器端实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数据格式"><span class="toc-number">6.</span> <span class="toc-text">数据格式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安全性"><span class="toc-number">7.</span> <span class="toc-text">安全性</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/vue2全家桶/" title="vue2全家桶">vue2全家桶<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/一些坑/" title="一些坑">一些坑<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/前端开发最佳实践/" title="前端开发最佳实践">前端开发最佳实践<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/基础理论，原理/" title="基础理论，原理">基础理论，原理<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/方法函数，技巧/" title="方法函数，技巧">方法函数，技巧<sup>1</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/CSS3/" title="CSS3">CSS3<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/CORS/" title="CORS">CORS<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/CSS计算属性/" title="CSS计算属性">CSS计算属性<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/自适应布局/" title="自适应布局">自适应布局<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/HTTP-OPTIONS/" title="HTTP OPTIONS">HTTP OPTIONS<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/preflight-request/" title="preflight request">preflight request<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/vue-hot-reload/" title="vue hot reload">vue hot reload<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/pointer-events/" title="pointer-events">pointer-events<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/hasOwnProperty用法/" title="hasOwnProperty用法">hasOwnProperty用法<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/JSON字段连字符式转为驼峰式/" title="JSON字段连字符式转为驼峰式">JSON字段连字符式转为驼峰式<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/连字符转为驼峰式/" title="连字符转为驼峰式">连字符转为驼峰式<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/apply-call-bind的作用/" title="apply,call,bind的作用">apply,call,bind的作用<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/proto/" title="_proto_">_proto_<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/原型链/" title="原型链">原型链<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/iframe-resize/" title="iframe resize">iframe resize<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/calc-函数/" title="calc()函数">calc()函数<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/兼容IE8/" title="兼容IE8">兼容IE8<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/展示组件/" title="展示组件">展示组件<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/容器组件/" title="容器组件">容器组件<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/react/" title="react">react<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://coderq.com" target="_blank" title="一个面向程序员交流分享的新一代社区">码农圈</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://wuchong.me" target="_blank" title="Jark&#39;s Blog">Jark&#39;s Blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS</a>
+</div>
+
+  <div class="weiboshow">
+  <p class="asidetitle">Weibo</p>
+    <iframe width="100%" height="119" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=null&verifier=b3593ceb&dpc=1"></iframe>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Larry Page in Google. <br/>
+			This is my blog,believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/2176287895" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="rootesli">rootesli</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+
+    
+  <url>
+    <loc>https://rootsli.github.io/2018/06/30/react-component-pattern/</loc>
+    <lastmod>2018-06-30T04:05:54.823Z</lastmod>
+    <data>
+        <display>
+        <title>展示组件和容器组件分离在React项目中的实践</title>
+        <pubTime>2018-06-30T03:54:14.000Z</pubTime>
+        
+        <tag>展示组件</tag>
+         
+        <tag>容器组件</tag>
+         
+        <tag>react</tag>
+         
+        <tag>react组件设计</tag>
+         
+         
+           
+             
+              <breadCrumb title="前端开发最佳实践" url="https://rootsli.github.io/categories/%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://rootsli.github.io/2018/01/04/ie8-compatibility/</loc>
+    <lastmod>2018-06-30T03:00:24.863Z</lastmod>
+    <data>
+        <display>
+        <title>前端开发最佳实践之React兼容IE8+的踩坑总结</title>
+        <pubTime>2018-01-04T09:58:04.000Z</pubTime>
+        
+        <tag>CORS</tag>
+         
+        <tag>React 跨域</tag>
+         
+        <tag>兼容IE8</tag>
+         
+         
+           
+             
+              <breadCrumb title="前端开发最佳实践" url="https://rootsli.github.io/categories/%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://rootsli.github.io/2017/01/24/vue2-hot-reload-webstorm/</loc>
+    <lastmod>2018-06-30T03:00:24.863Z</lastmod>
+    <data>
+        <display>
+        <title>关于使用vue-loader时，热部署无法使用问题</title>
+        <pubTime>2017-01-24T12:35:08.000Z</pubTime>
+        
+        <tag>vue-cli</tag>
+         
+        <tag>vue hot reload</tag>
+         
+         
+           
+             
+              <breadCrumb title="一些坑" url="https://rootsli.github.io/categories/%E4%B8%80%E4%BA%9B%E5%9D%91/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://rootsli.github.io/2017/05/04/vue2-family-webpack2/</loc>
+    <lastmod>2018-06-30T03:00:24.863Z</lastmod>
+    <data>
+        <display>
+        <title>vue2全家桶及基于webpack2的构建生态圈</title>
+        <pubTime>2017-05-04T09:03:04.000Z</pubTime>
+        
+        <tag>vue2</tag>
+         
+        <tag>vuex</tag>
+         
+        <tag>vue-router</tag>
+         
+        <tag>webpack2</tag>
+         
+         
+           
+             
+              <breadCrumb title="vue2全家桶" url="https://rootsli.github.io/categories/vue2%E5%85%A8%E5%AE%B6%E6%A1%B6/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://rootsli.github.io/2017/01/17/server-sent-events/</loc>
+    <lastmod>2018-06-30T03:00:24.863Z</lastmod>
+    <data>
+        <display>
+        <title>前端开发最佳实践之HTML5 Server-Sent Events串流的使用</title>
+        <pubTime>2017-01-17T12:31:16.000Z</pubTime>
+        
+        <tag>HTML5 串流</tag>
+         
+        <tag>SSE</tag>
+         
+        <tag>Server-Sent Events</tag>
+         
+        <tag>WebSocket</tag>
+         
+         
+           
+             
+              <breadCrumb title="前端开发最佳实践" url="https://rootsli.github.io/categories/%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://rootsli.github.io/2017/10/26/iframe-resize-code/</loc>
+    <lastmod>2018-06-30T03:00:24.863Z</lastmod>
+    <data>
+        <display>
+        <title>一段iframe自适应代码的分享</title>
+        <pubTime>2017-10-26T14:31:16.000Z</pubTime>
+        
+        <tag>iframe resize</tag>
+         
+         
+           
+             
+              <breadCrumb title="前端开发最佳实践" url="https://rootsli.github.io/categories/%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+    
+  <url>
+    <loc>https://rootsli.github.io/2016/12/28/about-http-options/</loc>
+    <lastmod>2018-06-30T03:00:24.862Z</lastmod>
+    <data>
+        <display>
+        <title>前端开发最佳实践之CORS请求在浏览器端的处理过程</title>
+        <pubTime>2016-12-28T09:58:04.000Z</pubTime>
+        
+        <tag>HTTP OPTIONS</tag>
+         
+        <tag>preflight request</tag>
+         
+        <tag>CORS</tag>
+         
+         
+           
+             
+              <breadCrumb title="前端开发最佳实践" url="https://rootsli.github.io/categories/%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://rootsli.github.io/2017/03/31/fouc-no-css/</loc>
+    <lastmod>2018-06-30T03:00:24.862Z</lastmod>
+    <data>
+        <display>
+        <title>通过代码读懂apply,call,bind及JS原型链</title>
+        <pubTime>2017-03-31T11:31:00.000Z</pubTime>
+        
+        <tag>apply,call,bind的作用</tag>
+         
+        <tag>_proto_</tag>
+         
+        <tag>原型链</tag>
+         
+         
+           
+             
+              <breadCrumb title="基础理论，原理" url="https://rootsli.github.io/categories/%E5%9F%BA%E7%A1%80%E7%90%86%E8%AE%BA%EF%BC%8C%E5%8E%9F%E7%90%86/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://rootsli.github.io/2017/03/02/camelcased-transfer/</loc>
+    <lastmod>2018-06-30T03:00:24.862Z</lastmod>
+    <data>
+        <display>
+        <title>一个将JSON对象连字符式转为驼峰式的处理函数</title>
+        <pubTime>2017-03-02T12:31:51.000Z</pubTime>
+        
+        <tag>hasOwnProperty用法</tag>
+         
+        <tag>JSON字段连字符式转为驼峰式</tag>
+         
+        <tag>连字符转为驼峰式</tag>
+         
+         
+           
+             
+              <breadCrumb title="方法函数，技巧" url="https://rootsli.github.io/categories/%E6%96%B9%E6%B3%95%E5%87%BD%E6%95%B0%EF%BC%8C%E6%8A%80%E5%B7%A7/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://rootsli.github.io/2017/01/09/about-pointer-events/</loc>
+    <lastmod>2018-06-30T03:00:24.862Z</lastmod>
+    <data>
+        <display>
+        <title>前端开发最佳实践之CSS3 pointer-events:none</title>
+        <pubTime>2017-01-09T12:12:17.000Z</pubTime>
+        
+        <tag>CSS3</tag>
+         
+        <tag>pointer-events</tag>
+         
+         
+           
+             
+              <breadCrumb title="前端开发最佳实践" url="https://rootsli.github.io/categories/%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://rootsli.github.io/2016/12/29/about-css3-calc/</loc>
+    <lastmod>2018-06-30T03:00:24.862Z</lastmod>
+    <data>
+        <display>
+        <title>前端开发最佳实践之CSS3 calc()函数</title>
+        <pubTime>2016-12-29T06:54:14.000Z</pubTime>
+        
+        <tag>CSS3</tag>
+         
+        <tag>calc()函数</tag>
+         
+        <tag>CSS计算属性</tag>
+         
+        <tag>自适应布局</tag>
+         
+         
+           
+             
+              <breadCrumb title="前端开发最佳实践" url="https://rootsli.github.io/categories/%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/"/>
+          
+        </display>
+    </data>
+    </url>
+
+</urlset>

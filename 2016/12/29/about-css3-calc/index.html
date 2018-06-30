@@ -1,0 +1,610 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>前端开发最佳实践之CSS3 calc()函数 | rootesli的博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="rootesli">
+    
+
+    
+    <meta name="description" content="在进行前端的自适应布局时，使用calc会带来很大的便利性，本篇文章主要介绍calc属性在自适应布局中的应用">
+<meta name="keywords" content="CSS3,calc()函数,CSS计算属性,自适应布局">
+<meta property="og:type" content="article">
+<meta property="og:title" content="前端开发最佳实践之CSS3 calc()函数">
+<meta property="og:url" content="https://rootsli.github.io/2016/12/29/about-css3-calc/index.html">
+<meta property="og:site_name" content="rootesli的博客">
+<meta property="og:description" content="在进行前端的自适应布局时，使用calc会带来很大的便利性，本篇文章主要介绍calc属性在自适应布局中的应用">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://rootsli.github.io/assets/img/layouta.jpg">
+<meta property="og:image" content="https://rootsli.github.io/assets/img/calc-compatibility.jpg">
+<meta property="og:image" content="https://rootsli.github.io/assets/img/calc-menu.jpg">
+<meta property="og:image" content="https://rootsli.github.io/assets/img/calc-menu-scroll2.jpg">
+<meta property="og:image" content="https://rootsli.github.io/assets/img/calc-menu-scroll1.jpg">
+<meta property="og:updated_time" content="2018-06-30T03:00:24.862Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="前端开发最佳实践之CSS3 calc()函数">
+<meta name="twitter:description" content="在进行前端的自适应布局时，使用calc会带来很大的便利性，本篇文章主要介绍calc属性在自适应布局中的应用">
+<meta name="twitter:image" content="https://rootsli.github.io/assets/img/layouta.jpg">
+
+    
+    <link rel="alternative" href="/atom.xml" title="rootesli的博客" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="rootesli的博客" title="rootesli的博客"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="rootesli的博客">rootesli的博客</a></h1>
+				<h2 class="blog-motto">a monkey a man</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:rootsli.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/12/29/about-css3-calc/" title="前端开发最佳实践之CSS3 calc()函数" itemprop="url">前端开发最佳实践之CSS3 calc()函数</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="rootesli" target="_blank" itemprop="author">rootesli</a>
+		
+  <p class="article-time">
+    <time datetime="2016-12-29T06:54:14.000Z" itemprop="datePublished"> Published 2016-12-29</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一个布局问题的优化"><span class="toc-number">1.</span> <span class="toc-text">一个布局问题的优化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#calc-简介"><span class="toc-number">2.</span> <span class="toc-text">calc()简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#calc-典型应用场景"><span class="toc-number">3.</span> <span class="toc-text">calc()典型应用场景</span></a></li></ol>
+		
+		</div>
+		
+		<h2 id="一个布局问题的优化"><a href="#一个布局问题的优化" class="headerlink" title="一个布局问题的优化"></a>一个布局问题的优化</h2><p>最近在做一个新的web运维系统，要求页面内容要能自适应屏幕视窗。如下图：( 图1)</p>
+<p><img src="/assets/img/layouta.jpg" alt="image"></p>
+<p>有2个地方涉及自适应浏览器窗口：</p>
+<ul>
+<li>左侧菜单栏部分（区域2和区域3），区域2的菜单内容为动态生成，区域3要求始终位于页面底部。</li>
+<li>右侧主内容区域（区域4，区域5，区域6和区域7）。其中区域4高度固定，区域5的高度要随着浏览器视窗高度动态铺满。区域6，区域7要求也要动态铺满，且高度各位浏览器可视区域高度的1/2。</li>
+</ul>
+<p>以上自适应部分，除非区域内部内容高度超出区域高度，否则不允许出现滚动条。</p>
+<p>最初实现这个布局的是一位新同学，吧啦吧啦用了一堆js代码，通过监控窗口的resize事件总算完成了（大致实现方法应该大家都能想到，这里就不贴代码了）。由于框架通过路由来实现跳转，各个区域自然不在同一个js里面。导致代码看起来不那么“美观”，不好维护，而且在计算高度时，由于浏览器差异性，导致用户体验也不是很好。</p>
+<p>于是问题出来了，有没有更好的方法实现呢？使这样的动态布局不需要依赖js来处理，从而与js解耦。答案就是CSS3的<code>calc()</code>方法了。于是又跟新人吧啦吧啦讲了一堆，最后仅使用<code>calc()</code>，没有写一行js，把这个布局问题完美解决了。</p>
+<h2 id="calc-简介"><a href="#calc-简介" class="headerlink" title="calc()简介"></a>calc()简介</h2><p> calc属于CSS3的一个函数，任何元素的宽高度都可以使用calc()函数进行计算；calc()函数支持 “+”, “-“, “*”, “/“ 运算符。<br> 浏览器支持情况如下：( 图2)</p>
+<p><img src="/assets/img/calc-compatibility.jpg" alt=""></p>
+<p>calc()语法示例：</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">width: calc(100% - 10px)；</span><br></pre></td></tr></table></figure>
+<h2 id="calc-典型应用场景"><a href="#calc-典型应用场景" class="headerlink" title="calc()典型应用场景"></a>calc()典型应用场景</h2><p> 当在一个纵向（或横向）排列的区域块中，其中某几个区域高度（或宽度）固定，另一些区域需要根据浏览器高度（或宽度）填满剩余空间时，建议使用calc()函数实现。如下图：（ 图3,页面整体布局参考图1）</p>
+<p><img src="/assets/img/calc-menu.jpg" alt=""></p>
+<ul>
+<li>区域1和区域3高度固定，区域1紧贴顶部，区域3紧贴底部，区域2根据配置动态生成，并要求区域2高度能根据浏览器高度自适应剩余区域，且当区域2内部内容高度过高而出现滚动条时，滚动条上下滚动不会导致区域2与区域3重叠。</li>
+<li>不满足要求（菜单栏滚动条出现后，区域2和区域3重叠）</li>
+</ul>
+<p><img src="/assets/img/calc-menu-scroll2.jpg" alt=""></p>
+<ul>
+<li>满足要求（菜单栏滚动条出现后，区域2和区域3不重叠）</li>
+</ul>
+<p><img src="/assets/img/calc-menu-scroll1.jpg" alt=""></p>
+<ul>
+<li>实现代码</li>
+</ul>
+<p>CSS源码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">#portal-header &#123;</span><br><span class="line">    position: fixed;</span><br><span class="line">    top: 0px;</span><br><span class="line">    width: 100%;</span><br><span class="line">    height: 70px;</span><br><span class="line">    padding: 0px;</span><br><span class="line">    background-color: #387AB7;</span><br><span class="line">    z-index: 8000;</span><br><span class="line">    min-width: 860px;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#portal-sidebar &#123;</span><br><span class="line">    position: fixed;</span><br><span class="line">    top: 70px;</span><br><span class="line">    width: 230px;</span><br><span class="line">    background-color: #EAEDF1;</span><br><span class="line">    z-index: 8000;</span><br><span class="line">    overflow-y: auto;</span><br><span class="line">    bottom: 0;</span><br><span class="line">&#125;</span><br><span class="line">/* 区域2高度使用了calc()函数结合min-height来满足布局要求 */</span><br><span class="line">#sidebar-scroll &#123;</span><br><span class="line">    min-height: -moz-calc(100% - 120px);</span><br><span class="line">    min-height: -webkit-calc(100% - 120px);</span><br><span class="line">    min-height: calc(100% - 120px);</span><br><span class="line">&#125;</span><br><span class="line">.nav-feed-back &#123;</span><br><span class="line">    overflow: hidden;</span><br><span class="line">    position: relative;</span><br><span class="line">    height: 120px;</span><br><span class="line">    padding: 16px;</span><br><span class="line">    margin: auto;</span><br><span class="line">    box-sizing: border-box;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>HTML源码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;div id=&quot;portal-header&quot;&gt;</span><br><span class="line">    &lt;!-- 区域1 --&gt;</span><br><span class="line">&lt;/div&gt;</span><br><span class="line">&lt;nav id=&quot;portal-sidebar&quot;&gt;</span><br><span class="line">    &lt;div id=&quot;sidebar-scroll&quot;&gt;</span><br><span class="line">        &lt;!-- 区域2 --&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">    &lt;div class=&quot;nav-feed-back&quot;&gt;</span><br><span class="line">        &lt;!-- 区域3 --&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">&lt;/nav&gt;</span><br></pre></td></tr></table></figure>
+<p>从代码可知，为了使区域2的高度能自适应浏览器高度，使用了calc()函数。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/前端开发最佳实践/">前端开发最佳实践</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/CSS3/">CSS3</a><a href="/tags/calc-函数/">calc()函数</a><a href="/tags/CSS计算属性/">CSS计算属性</a><a href="/tags/自适应布局/">自适应布局</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://rootsli.github.io/2016/12/29/about-css3-calc/" data-title="前端开发最佳实践之CSS3 calc()函数 | rootesli的博客" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2017/01/09/about-pointer-events/" title="前端开发最佳实践之CSS3 pointer-events:none">
+  <strong>上一篇：</strong><br/>
+  <span>
+  前端开发最佳实践之CSS3 pointer-events:none</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/12/28/about-http-options/"  title="前端开发最佳实践之CORS请求在浏览器端的处理过程">
+ <strong>下一篇：</strong><br/> 
+ <span>前端开发最佳实践之CORS请求在浏览器端的处理过程
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一个布局问题的优化"><span class="toc-number">1.</span> <span class="toc-text">一个布局问题的优化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#calc-简介"><span class="toc-number">2.</span> <span class="toc-text">calc()简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#calc-典型应用场景"><span class="toc-number">3.</span> <span class="toc-text">calc()典型应用场景</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/vue2全家桶/" title="vue2全家桶">vue2全家桶<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/一些坑/" title="一些坑">一些坑<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/前端开发最佳实践/" title="前端开发最佳实践">前端开发最佳实践<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/基础理论，原理/" title="基础理论，原理">基础理论，原理<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/方法函数，技巧/" title="方法函数，技巧">方法函数，技巧<sup>1</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/CSS3/" title="CSS3">CSS3<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/CORS/" title="CORS">CORS<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/CSS计算属性/" title="CSS计算属性">CSS计算属性<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/自适应布局/" title="自适应布局">自适应布局<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/HTTP-OPTIONS/" title="HTTP OPTIONS">HTTP OPTIONS<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/preflight-request/" title="preflight request">preflight request<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/vue-hot-reload/" title="vue hot reload">vue hot reload<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/pointer-events/" title="pointer-events">pointer-events<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/hasOwnProperty用法/" title="hasOwnProperty用法">hasOwnProperty用法<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/JSON字段连字符式转为驼峰式/" title="JSON字段连字符式转为驼峰式">JSON字段连字符式转为驼峰式<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/连字符转为驼峰式/" title="连字符转为驼峰式">连字符转为驼峰式<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/apply-call-bind的作用/" title="apply,call,bind的作用">apply,call,bind的作用<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/proto/" title="_proto_">_proto_<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/原型链/" title="原型链">原型链<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/iframe-resize/" title="iframe resize">iframe resize<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/calc-函数/" title="calc()函数">calc()函数<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/兼容IE8/" title="兼容IE8">兼容IE8<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/展示组件/" title="展示组件">展示组件<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/容器组件/" title="容器组件">容器组件<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/react/" title="react">react<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://coderq.com" target="_blank" title="一个面向程序员交流分享的新一代社区">码农圈</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://wuchong.me" target="_blank" title="Jark&#39;s Blog">Jark&#39;s Blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS</a>
+</div>
+
+  <div class="weiboshow">
+  <p class="asidetitle">Weibo</p>
+    <iframe width="100%" height="119" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=null&verifier=b3593ceb&dpc=1"></iframe>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Larry Page in Google. <br/>
+			This is my blog,believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/2176287895" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="rootesli">rootesli</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
